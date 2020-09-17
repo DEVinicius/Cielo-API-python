@@ -1,19 +1,8 @@
 import requests, json
 
 class Pagamento():
-
-    def __init__(self, merchantOrderId, CustomerName, Amount, Installments, CardNumber, CardHolder, ExpirationDate, SecurityCode, Brand):
-        self.merchantOrderId = merchantOrderId
-        self.CustomerName = CustomerName
-        self.Amount = Amount
-        self.Installments = Installments
-        self.CardNumber = CardNumber
-        self.CardHolder = CardHolder
-        self.ExpirationDate = ExpirationDate
-        self.SecurityCode = SecurityCode
-        self.Brand = Brand
     
-    def creditCard(self, ):
+    def creditCard(self, merchantOrderId, CustomerName, Amount, Installments, CardNumber, CardHolder, ExpirationDate, SecurityCode, Brand):
         header = {
             "Content-Type" : "application/json",
             "MerchantId" : 'e95add03-2cfe-4a63-9573-239eeebcdeb6',
@@ -22,23 +11,60 @@ class Pagamento():
 
         url = "https://apisandbox.cieloecommerce.cielo.com.br/1/sales/"
         json_data = {
-            "MerchantOrderId": self.merchantOrderId,
+            "MerchantOrderId": merchantOrderId,
             "Customer": {
-                "Name": self.CustomerName
+                "Name": CustomerName
             },
             "Payment":{
                 "Type":"CreditCard",
-                "Amount": self.Amount,
-                "Installments": self.Installments,
+                "Amount": Amount,
+                "Installments": Installments,
                 "CreditCard":{
-                    "CardNumber": self.CardNumber,
-                    "Holder": self.CardHolder,
-                    "ExpirationDate": self.ExpirationDate,
-                    "SecurityCode": self.SecurityCode,
-                    "Brand": self.Brand
+                    "CardNumber": CardNumber,
+                    "Holder": CardHolder,
+                    "ExpirationDate": ExpirationDate,
+                    "SecurityCode": SecurityCode,
+                    "Brand": Brand
                 }
             }
         }
 
         request = requests.post(url, headers = header, json = json_data)
-        print(request)
+        print(request.text)
+
+    def BankSlip(self, MerchantOrderId, CustomerName, CustomerZipCode, CustomerCountry, CustomerState, CustomerCity, CustomerDistrict, CustomerStreet, CustomerNumber, CustomerComplement, PaymentAmount, PaymentAddress, BankSlipNumber, BankSlipExpirationDate, CompanyName):
+        header = {
+            "Content-Type" : "application/json",
+            "MerchantId" : 'e95add03-2cfe-4a63-9573-239eeebcdeb6',
+            "MerchantKey" : "BSCWMSQLHMKBFYIMIEEKNJKPNARGMCWFVKVVYHJG"
+        }
+
+        url = "https://apisandbox.cieloecommerce.cielo.com.br/1/sales/"
+        json = {
+            "MerchantOrderId": MerchantOrderId,
+            "Customer": 
+            {
+                "Name": CustomerName,
+                "Address":
+                {
+                    "Street" : CustomerStreet,
+                    "Number" : CustomerNumber,
+                    "Complement" : CustomerComplement,
+                    "ZipCode" : CustomerZipCode,
+                    "District" : CustomerDistrict,
+                    "City" : CustomerCity,
+                    "State" : CustomerState,
+                    "Country" : CustomerCountry
+                }
+            },
+            "Payment":
+            {
+                "Type" : "Boleto",
+                "Amount" : PaymentAmount,
+                "Provider" : "Simulado",
+                "Address" : PaymentAddress,
+                "BoletoNumber" : BankSlipNumber,
+                "Assignor" : CompanyName,
+                "ExpirationDate" : BankSlipExpirationDate
+            }
+        }
